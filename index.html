@@ -9,274 +9,111 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-income: #00ffcc; /* Neon Green for Income */
-            --primary-expense: #ff3366; /* Neon Pink/Red for Expense */
+            --primary-income: #00ffcc;
+            --primary-expense: #ff3366;
             --bg-dark: #0a0a0c;
-            --bg-card: rgba(22, 22, 26, 0.7);
+            --bg-card: rgba(22, 22, 26, 0.8);
             --text-light: #e0e0e0;
-            --text-muted: #888888;
         }
         body {
-            margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0; font-family: 'Segoe UI', sans-serif;
             background-color: var(--bg-dark); color: var(--text-light);
-            background-image: radial-gradient(circle at top right, rgba(0, 255, 204, 0.05), transparent 40%),
-                              radial-gradient(circle at bottom left, rgba(255, 51, 102, 0.05), transparent 40%);
-            background-attachment: fixed;
+            background-image: radial-gradient(circle at top right, rgba(0, 255, 204, 0.05), transparent 40%);
         }
-        
-        /* Header */
-        header {
-            padding: 30px 50px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
-        }
-        header h1 { margin: 0; color: #fff; font-size: 28px; letter-spacing: 2px; }
+        header { padding: 30px 50px; border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+        header h1 { margin: 0; font-size: 28px; letter-spacing: 2px; }
         header h1 span { color: var(--primary-income); }
-
-        /* Dashboard Container */
         .dashboard-container { max-width: 1300px; margin: 40px auto; padding: 0 20px; }
-        
-        /* Loading/Error State */
         #status-message { text-align: center; font-size: 20px; color: var(--primary-income); padding: 50px; }
-
-        /* Top Cards (Summary) */
-        .summary-cards {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px;
-        }
-        .card {
-            background: var(--bg-card); border-radius: 20px; padding: 30px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: 0.3s;
-        }
-        .card:hover { transform: translateY(-5px); border-color: rgba(255,255,255,0.1); }
-        .card h3 { margin: 0 0 10px 0; color: var(--text-muted); font-size: 18px; text-transform: uppercase; letter-spacing: 1px;}
-        .card h2 { margin: 0; font-size: 40px; font-weight: bold; }
-        
-        .income-text { color: var(--primary-income); text-shadow: 0 0 15px rgba(0, 255, 204, 0.3); }
-        .expense-text { color: var(--primary-expense); text-shadow: 0 0 15px rgba(255, 51, 102, 0.3); }
-        .balance-text { color: #fff; }
-
-        /* Charts Section */
-        .charts-grid {
-            display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin-bottom: 40px;
-        }
-        .chart-box {
-            background: var(--bg-card); border-radius: 20px; padding: 30px;
-            border: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-        .chart-box h3 { margin-top: 0; color: #fff; margin-bottom: 20px; }
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px; }
+        .card { background: var(--bg-card); border-radius: 20px; padding: 30px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .card h3 { margin: 0; color: #888; text-transform: uppercase; font-size: 14px; }
+        .card h2 { margin: 10px 0 0 0; font-size: 36px; }
+        .income-text { color: var(--primary-income); }
+        .expense-text { color: var(--primary-expense); }
+        .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        .chart-box { background: var(--bg-card); border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.05); }
         .canvas-container { position: relative; height: 350px; width: 100%; }
-
-        /* Footer */
-        footer { text-align: center; padding: 30px; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); margin-top: 50px;}
-
-        /* Responsive */
-        @media (max-width: 900px) {
-            .charts-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 900px) { .charts-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
-
-    <header>
-        <h1>HASEEB <span>DATA.</span></h1>
-        <div style="color: var(--text-muted); font-size: 16px;"><i class="fas fa-lock"></i> Live Financial Portfolio</div>
-    </header>
-
+    <header><h1>HASEEB <span>DATA.</span></h1></header>
     <div class="dashboard-container">
-        
-        <div id="status-message">
-            <i class="fas fa-spinner fa-spin"></i> Reading your data file...
-        </div>
-
+        <div id="status-message"><i class="fas fa-spinner fa-spin"></i> Analyzing Haseeb's Data...</div>
         <div id="dashboard-content" style="display: none;">
             <div class="summary-cards">
-                <div class="card">
-                    <h3>Total Income</h3>
-                    <h2 class="income-text" id="total-income">0</h2>
-                </div>
-                <div class="card">
-                    <h3>Total Expenses</h3>
-                    <h2 class="expense-text" id="total-expense">0</h2>
-                </div>
-                <div class="card">
-                    <h3>Net Balance</h3>
-                    <h2 class="balance-text" id="net-balance">0</h2>
-                </div>
+                <div class="card"><h3>Total Income</h3><h2 class="income-text" id="total-income">0</h2></div>
+                <div class="card"><h3>Total Expenses</h3><h2 class="expense-text" id="total-expense">0</h2></div>
+                <div class="card"><h3>Net Balance</h3><h2 id="net-balance">0</h2></div>
             </div>
-
             <div class="charts-grid">
-                <div class="chart-box">
-                    <h3>Income vs Expenses (Timeline)</h3>
-                    <div class="canvas-container">
-                        <canvas id="timelineChart"></canvas>
-                    </div>
-                </div>
-                <div class="chart-box">
-                    <h3>Where Money Went (Expenses)</h3>
-                    <div class="canvas-container">
-                        <canvas id="expenseCategoryChart"></canvas>
-                    </div>
-                </div>
+                <div class="chart-box"><h3>Timeline (Daily Flow)</h3><div class="canvas-container"><canvas id="timelineChart"></canvas></div></div>
+                <div class="chart-box"><h3>Expense Breakdown</h3><div class="canvas-container"><canvas id="expenseCategoryChart"></canvas></div></div>
             </div>
         </div>
     </div>
-
-    <footer>
-        <p>Dashboard Architect: Haseeb | Built for high-end data analytics.</p>
-    </footer>
-
     <script>
-        // Formatting numbers to currency (PKR/USD style)
         const formatter = new Intl.NumberFormat('en-US');
+        function buildDashboard(rows) {
+            let totalIncome = 0, totalExpense = 0;
+            let dates = [], incomeByDate = {}, expenseByDate = {}, expensesBySub = {};
 
-        // This function builds the entire dashboard after reading the CSV
-        function buildDashboard(data) {
-            let totalIncome = 0;
-            let totalExpense = 0;
-            
-            // For Charts
-            let dates = [];
-            let incomeByDate = {};
-            let expenseByDate = {};
-            let expensesByCategory = {};
+            rows.forEach((row, index) => {
+                if (index === 0 || !row[1] || !row[3]) return; // Skip header/empty
+                
+                let category = row[1].trim().toLowerCase();
+                let subCategory = row[2].trim();
+                let amount = parseFloat(row[3]) || 0;
+                let date = row[4].trim();
 
-            // Loop through every row in your CSV
-            data.forEach(row => {
-                // Column 0: Type, Column 1: Category, Column 2: Amount, Column 3: Date
-                if(row.length >= 4 && row[0] && row[2]) {
-                    let type = row[0].toString().toLowerCase().trim();
-                    let category = row[1].toString().trim();
-                    // Clean amount (remove commas if any)
-                    let amountStr = row[2].toString().replace(/,/g, '');
-                    let amount = parseFloat(amountStr) || 0;
-                    let date = row[3].toString().trim();
+                if (!dates.includes(date)) {
+                    dates.push(date); incomeByDate[date] = 0; expenseByDate[date] = 0;
+                }
 
-                    // Skip the header row if it exists
-                    if(type === 'type' || type.includes('income/expense') || isNaN(amount)) return;
-
-                    // Add to Date Array if new
-                    if(!dates.includes(date)) {
-                        dates.push(date);
-                        incomeByDate[date] = 0;
-                        expenseByDate[date] = 0;
-                    }
-
-                    // Process Income
-                    if(type.includes('income') || type.includes('آمدنی') || type === 'in') {
-                        totalIncome += amount;
-                        incomeByDate[date] += amount;
-                    } 
-                    // Process Expense
-                    else {
-                        totalExpense += amount;
-                        expenseByDate[date] += amount;
-                        
-                        // Add to category
-                        if(expensesByCategory[category]) {
-                            expensesByCategory[category] += amount;
-                        } else {
-                            expensesByCategory[category] = amount;
-                        }
-                    }
+                if (category.includes('income')) {
+                    totalIncome += amount; incomeByDate[date] += amount;
+                } else if (category.includes('expence') || category.includes('expense')) {
+                    totalExpense += amount; expenseByDate[date] += amount;
+                    expensesBySub[subCategory] = (expensesBySub[subCategory] || 0) + amount;
                 }
             });
 
-            // 1. Update Top Cards
             document.getElementById('total-income').innerText = formatter.format(totalIncome);
             document.getElementById('total-expense').innerText = formatter.format(totalExpense);
             let balance = totalIncome - totalExpense;
             document.getElementById('net-balance').innerText = formatter.format(balance);
-            if(balance < 0) document.getElementById('net-balance').style.color = '#ff3366';
+            document.getElementById('net-balance').className = balance >= 0 ? 'income-text' : 'expense-text';
 
-            // Prepare Data for Timeline Chart
-            // Sort dates if they are recognizable, otherwise keep original order
-            let chartDates = dates; 
-            let chartIncome = chartDates.map(d => incomeByDate[d]);
-            let chartExpense = chartDates.map(d => expenseByDate[d]);
-
-            // 2. Draw Timeline Line Chart
-            const ctxLine = document.getElementById('timelineChart').getContext('2d');
-            new Chart(ctxLine, {
+            new Chart(document.getElementById('timelineChart'), {
                 type: 'line',
                 data: {
-                    labels: chartDates,
+                    labels: dates,
                     datasets: [
-                        {
-                            label: 'Income',
-                            data: chartIncome,
-                            borderColor: '#00ffcc',
-                            backgroundColor: 'rgba(0, 255, 204, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4
-                        },
-                        {
-                            label: 'Expense',
-                            data: chartExpense,
-                            borderColor: '#ff3366',
-                            backgroundColor: 'rgba(255, 51, 102, 0.1)',
-                            borderWidth: 3,
-                            fill: true,
-                            tension: 0.4
-                        }
+                        { label: 'Income', data: dates.map(d => incomeByDate[d]), borderColor: '#00ffcc', tension: 0.4, fill: true, backgroundColor: 'rgba(0,255,204,0.1)' },
+                        { label: 'Expense', data: dates.map(d => expenseByDate[d]), borderColor: '#ff3366', tension: 0.4, fill: true, backgroundColor: 'rgba(255,51,102,0.1)' }
                     ]
                 },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } },
-                        x: { grid: { display: false }, ticks: { color: '#888' } }
-                    },
-                    plugins: { legend: { labels: { color: '#fff' } } }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } }, x: { ticks: { color: '#888' } } } }
             });
 
-            // 3. Draw Expense Category Doughnut Chart
-            let catLabels = Object.keys(expensesByCategory);
-            let catData = Object.values(expensesByCategory);
-            
-            const ctxDoughnut = document.getElementById('expenseCategoryChart').getContext('2d');
-            new Chart(ctxDoughnut, {
+            new Chart(document.getElementById('expenseCategoryChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: catLabels,
-                    datasets: [{
-                        data: catData,
-                        backgroundColor: [
-                            '#ff3366', '#ff6680', '#ff99aa', '#cc0033', '#990026', '#ff0040'
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 10
-                    }]
+                    labels: Object.keys(expensesBySub),
+                    datasets: [{ data: Object.values(expensesBySub), backgroundColor: ['#ff3366', '#ff6680', '#cc0033', '#990026', '#ffb3bf'], borderWidth: 0 }]
                 },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        legend: { position: 'right', labels: { color: '#fff', padding: 20 } }
-                    },
-                    cutout: '70%'
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#fff' } } }, cutout: '70%' }
             });
 
-            // Show dashboard, hide loading
             document.getElementById('status-message').style.display = 'none';
             document.getElementById('dashboard-content').style.display = 'block';
         }
 
-        // Magic: Auto-read the CSV file from GitHub!
         Papa.parse("data.csv", {
             download: true,
-            complete: function(results) {
-                if(results.data && results.data.length > 0) {
-                    buildDashboard(results.data);
-                } else {
-                    document.getElementById('status-message').innerHTML = "<i class='fas fa-exclamation-triangle'></i> File format error or empty data.";
-                }
-            },
-            error: function(err) {
-                document.getElementById('status-message').innerHTML = "<i class='fas fa-file-csv'></i> Please upload 'data.csv' to your GitHub repository to see the magic.";
-            }
+            complete: function(results) { buildDashboard(results.data); },
+            error: function() { document.getElementById('status-message').innerHTML = "Error loading data.csv"; }
         });
     </script>
 </body>
